@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Health Sync</string>
+    <string name="hc_privacy_title">Health Sync privacy policy</string>
+    <string name="hc_privacy_policy">Health Sync reads and writes nutrition records and writes exercise sessions in Health Connect only to keep them in sync with your own Calorie Tracker files in your own Google Drive.\n\nData is never sent anywhere except your Google Drive account. Nothing is shared with third parties, used for advertising, or stored on any server run by this app.\n\nYou can revoke access at any time in Health Connect &gt; App permissions &gt; Health Sync.</string>
+</resources>
