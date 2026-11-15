@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.health.READ_NUTRITION" />
+    <uses-permission android:name="android.permission.health.WRITE_NUTRITION" />
+    <!-- One-way workout export (v1.1.0): the app WRITES ExerciseSessionRecords
+         for workouts logged in the Workout space. Write-only on purpose:
+         insertRecords with a stable clientRecordId upserts and
+         deleteRecords by clientRecordIdsList needs no read, so READ_EXERCISE
+         is deliberately NOT requested. Writes run on the 15-min schedule
+         without any background-read grant (that grant only gates reads). -->
+    <uses-permission android:name="android.permission.health.WRITE_EXERCISE" />
+    <!-- Lets the 15-minute background sync READ Samsung Health meals without
+         opening the app. Granted in Health Connect settings; without it the
+         import direction only refreshes when the app is opened. -->
+    <uses-permission android:name="android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND" />
+
+    <queries>
+        <package android:name="com.google.android.apps.healthdata" />
+        <!-- Package visibility (Android 11+): without these, the Health
+             Connect settings / manage-permissions screens are invisible
+             to this app even when they exist — the intents resolve to
+             nothing and the permission request comes back empty. The
+             handlers may live in the Health Connect app, in Settings,
+             or in the system module, so declare the actions, not just
+             the package. -->
+        <intent>
+            <action android:name="androidx.health.ACTION_HEALTH_CONNECT_SETTINGS" />
+        </intent>
+        <intent>
+            <action android:name="android.health.connect.action.MANAGE_HEALTH_PERMISSIONS" />
+        </intent>
+    </queries>
+
+    <application
+        android:name=".SyncApp"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.HealthSync">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- REQUIRED by Health Connect. Without a rationale / privacy-policy
+             activity the permission request is silently rejected: no dialog,
+             empty result, and the app never shows in Health Connect's
+             App permissions list. -->
+        <!-- Android 13 and lower (Health Connect APK). -->
+        <activity
+            android:name=".PermissionsRationaleActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+            </intent-filter>
+        </activity>
+
+        <!-- Android 14+ (Health Connect in the framework). -->
+        <activity-alias
+            android:name="ViewPermissionUsageActivity"
+            android:exported="true"
+            android:targetActivity=".PermissionsRationaleActivity"
+            android:permission="android.permission.START_VIEW_PERMISSION_USAGE">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
+                <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
+            </intent-filter>
+        </activity-alias>
+    </application>
+
+</manifest>
